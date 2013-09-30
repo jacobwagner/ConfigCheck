@@ -63,10 +63,17 @@ class ConfigCheck():
                         try:
                             config_file_value = ConfigType(value)
                         except ValueError, ve:
-                            self.value_error(section, key, value, error=str(ve))
+                            self.value_error(section,
+                                            key,
+                                            value,
+                                            error=str(ve))
                             break
                         except TypeError, te:
-                            self.type_error(section, key, value, error=str(te))
+                            self.type_error(section,
+                                            key,
+                                            value,
+                                            expected.type.value,
+                                            error=str(te))
                             break
                         
                         if config_file_value.type.value != expected.type.value:
@@ -132,10 +139,13 @@ class ConfigCheck():
     def value_error(self, section, option, value,
                     expected=None, error=None):
         self.option_mismatch(section, option)
-        if not error:
-            error = "{0} found, {1} expected".format(value, expected)
-
         self.option_mismatch(section, option)
+
+        if not error:
+            error = "Value Error: {0} != {1}".format(value, expected)
+        if not expected is None:
+            if not self.discrepencies[section][option].has_key('expected'):
+                self.discrepencies[section][option]['expected'] = str(expected)
         if not self.discrepencies[section][option].has_key('value'):
             self.discrepencies[section][option]['value'] = value
         if not self.discrepencies[section][option].has_key('error'):
@@ -146,9 +156,10 @@ class ConfigCheck():
         self.option_mismatch(section, option)
 
         if not error:
-            error = "{0} has type {1}: {2} expected".format(value,
-                                                            str(value_type),
-                                                            str(expected))
+            error = "Type Error: {0} != {1}".format(value_type, str(expected))
+        if not expected is None:
+            if not self.discrepencies[section][option].has_key('expected'):
+                self.discrepencies[section][option]['expected'] = str(expected)
         if not self.discrepencies[section][option].has_key('value'):
             self.discrepencies[section][option]['value'] = value
         if not self.discrepencies[section][option].has_key('error'):
