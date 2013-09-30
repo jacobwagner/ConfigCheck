@@ -63,22 +63,21 @@ class ConfigCheck():
                         try:
                             config_file_value = ConfigType(value)
                         except ValueError, ve:
-                            self.value_error(section, key, str(ve))
+                            self.value_error(section, key, value, error=str(ve))
+                            break
                         except TypeError, te:
-                            self.type_error(section, key, str(te))
+                            self.type_error(section, key, value, error=str(te))
+                            break
                         
-
                         if config_file_value.type.value != expected.type.value:
-                            self.option_type_mismatch(section,
-                                                      key,
-                                                      config_file_value.value,
-                                                      str(config_file_value.type.value),
-                                                      str(expected.type.value))
+                            self.type_error(section,
+                                            key,
+                                            config_file_value.value,
+                                            config_file_value.type.value,
+                                            expected.type.value)
                     else:
                         if expected.required is True:
-                            self.option_type_mismatch(section, key, '',
-                                                      str(ConfigType(None).type.value),
-                                                      str(expected.type.value))
+                            self.value_error(section, key, None, expected.type.value)
             else:
                 self.section_mismatch(section)
 
@@ -104,10 +103,10 @@ class ConfigCheck():
                     if self.config2.has_option(section, key):
                         actual_value = self.config2.get(section,key)
                         if actual_value != expected_value:
-                            self.option_value_mismatch(section,
-                                                       key,
-                                                       actual_value,
-                                                       expected_value)
+                            self.value_error(section,
+                                             key,
+                                             actual_value,
+                                             expected_value)
 
                     else:
                         self.option_mismatch(section, key)
@@ -130,37 +129,30 @@ class ConfigCheck():
         if not self.discrepencies[section].has_key(option):
             self.discrepencies[section][option] = {}
 
-    def option_type_mismatch(self, section, option, value, value_type, expected_type):
-        """ Adds a mismatched option type to discrepencies dictionary
-        """
-
+    def value_error(self, section, option, value,
+                    expected=None, error=None):
         self.option_mismatch(section, option)
-        if not self.discrepencies[section][option].has_key('expected_type'):
-            self.discrepencies[section][option]['expected_type'] = expected_type
-        if not self.discrepencies[section][option].has_key('value'):
-            self.discrepencies[section][option]['value'] = value
-        if not self.discrepencies[section][option].has_key('value_type'):
-            self.discrepencies[section][option]['value_type'] = value_type
-
-    def option_value_mismatch(self, section, option, value, expected_value):
-        """ Adds a mismatched option value to discrepencies dictionary
-        """
+        if not error:
+            error = "{0} found, {1} expected".format(value, expected)
 
         self.option_mismatch(section, option)
         if not self.discrepencies[section][option].has_key('value'):
             self.discrepencies[section][option]['value'] = value
-        if not self.discrepencies[section][option].has_key('expected_value'):
-            self.discrepencies[section][option]['expected_value'] = expected_value
+        if not self.discrepencies[section][option].has_key('error'):
+            self.discrepencies[section][option]['error'] = error
 
-    def value_error(self, section, option, error):
+    def type_error(self, section, option, value,
+                   value_type=None, expected=None, error=None):
         self.option_mismatch(section, option)
-        if not self.discrepencies[section][option].has_key('value_error'):
-            self.discrepencies[section][option]['value_error'] = error
 
-    def type_error(self, section, option, error):
-        self.option_mismatch(section, option)
-        if not self.discrepencies[section][option].has_key('type_error'):
-            self.discrepencies[section][option]['type_error'] = error
+        if not error:
+            error = "{0} has type {1}: {2} expected".format(value,
+                                                            str(value_type),
+                                                            str(expected))
+        if not self.discrepencies[section][option].has_key('value'):
+            self.discrepencies[section][option]['value'] = value
+        if not self.discrepencies[section][option].has_key('error'):
+            self.discrepencies[section][option]['error'] = error
 
     def pprint(self):
         """ Pretty prints the discrepencies dictionary
