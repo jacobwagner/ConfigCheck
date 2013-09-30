@@ -1,0 +1,12 @@
+#ignore files
+*.py[cod]
+*.pem
+*.out
+
+#Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+*~
+tox.ini
+.ropeproject/
