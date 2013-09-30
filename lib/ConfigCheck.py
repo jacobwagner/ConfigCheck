@@ -11,7 +11,7 @@ from ConfigParser import SafeConfigParser
 
 DELIMITER = ';'
 
-class ConfigCompare():
+class ConfigCheck():
 
     def __init__(self):
         """ Initializes config parsers
