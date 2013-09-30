@@ -1,9 +1,4 @@
 #!/usr/bin/python
-""" Takes a ConfigParser item object and determines what
-ConfigType it is
-
-This should be an enumeration
-"""
 
 import types
 
