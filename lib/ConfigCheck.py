@@ -23,7 +23,7 @@ class ConfigCheck():
         self.discrepencies = {}
 
     def __repr__(self):
-        """ Print out current instance of ccompare
+        """ Print out current class instance
         """
 
         outl = 'class :' + self.__class__.__name__
