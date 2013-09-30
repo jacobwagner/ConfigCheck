@@ -97,6 +97,10 @@ class ConfigCheck():
                     key = item[0]
                     expected_value = item[1]
 
+                    # Check for a blank expected value
+                    if expected_value == "":
+                        expected_value = None
+
                     if self.config2.has_option(section, key):
                         actual_value = self.config2.get(section,key)
                         if actual_value != expected_value:
@@ -109,6 +113,7 @@ class ConfigCheck():
                         self.option_mismatch(section, key)
             else:
                 self.section_mismatch(section)
+
 
     def section_mismatch(self, section, value=None):
         """ Adds a mismatched section to the discrepencies dictionary

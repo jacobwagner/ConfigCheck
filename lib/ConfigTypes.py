@@ -12,7 +12,7 @@ class ConfigType():
         """
         self.value = value
         self.required = required
-        self.type = self._to_class(self.value)
+        self.type = self._to_class(value)
 
     def __repr__(self):
         """ Prints out instance of class
